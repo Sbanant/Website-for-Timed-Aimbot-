@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aim Trainer</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: skyblue;
+        overflow: hidden;
+    }
+
+    .target {
+        width: 40px;
+        height: 40px;
+        background-image: url('red-black-bulls-eye-removebg-preview.png'); 
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: absolute;
+        border-radius: 50%; /* Ensures the target is circular */
+        cursor: pointer;
+    }
+    button {
+        margin-left: 20px;
+        width: 100px;
+        height: 45px;
+        font-size: 23px;
+        
+    }
+    #nextLevel {
+        font-size: 16px;
+    }
+    #message {
+     
+        font-size: 25px;
+    }
+</style>
+</head>
+<body>
+<script>
+    let targetsClicked = 0;
+    let level1StartTime;
+    let level2StartTime;
+    let currentLevel = 1;
+
+    function createTarget() {
+        const target = document.createElement('div');
+        target.classList.add('target');
+        if (currentLevel === 1) {
+            target.style.width = '60px';
+            target.style.height = '60px';
+        } else if (currentLevel === 2) {
+            target.style.width = '30px';
+            target.style.height = '30px';
+        }  
+        target.style.left = Math.random() * (window.innerWidth - parseInt(target.style.width)) + 'px';
+        target.style.top = Math.random() * (window.innerHeight - parseInt(target.style.height)) + 'px';
+        target.addEventListener('click', () => {
+            targetsClicked++;
+            if (targetsClicked === 30) {
+                endLevel();
+            }
+            document.body.removeChild(target);
+        });
+        document.body.appendChild(target);
+    }
+
+    function startGame() {
+        targetsClicked = 0;
+        if (currentLevel === 1) {
+            level1StartTime = new Date().getTime();
+        } else if (currentLevel === 2) {
+            level2StartTime = new Date().getTime();
+        }
+        for (let i = 0; i < 30; i++) {
+            setTimeout(createTarget, i * 1000);
+        }
+    }
+
+    function endLevel() {
+        const endTime = new Date().getTime();
+        const totalTime = (endTime - (currentLevel === 1 ? level1StartTime : level2StartTime)) / 1000;
+        if (currentLevel === 1) {
+            document.getElementById('message').innerText = "You have reached halfway on your road to attain the skill Self-Management.\n"+
+                                                            " Level 1 Time: " + totalTime + " seconds";
+            document.getElementById('nextLevel').style.display = 'block';
+        } else if (currentLevel === 2) {
+            document.getElementById('message').innerText = "You have attained the skill of Self-Management. \n"+"Level 2 Time: " + totalTime + " seconds\n"+"Moving on to the training of the next skill Researcher";
+            setTimeout(function() {
+          location.replace("./social.html")
+}, 3000);
+        }
+    }
+
+    function nextLevel() {
+        currentLevel++;
+        document.getElementById('nextLevel').style.display = 'none';
+        document.getElementById('message').innerText = '';
+        startGame();
+    }
+</script>
+<div id="message" style="text-align: center; margin-top: 50px;"></div>
+<button id="nextLevel" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"  onclick="nextLevel()">Next Level</button>
+
+<button onclick="startGame()">Start</button>
+</body>
+</html>
